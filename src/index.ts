@@ -7,14 +7,16 @@ import patientApp from './routes/patient.js'
 
 const app = new Hono().basePath('/api/v1');
 
-app.use('/api/*', cors())
 
+app.use('/api/*', cors())
+//TODO : had to add authentication
 app.use(logger())
 
 app.route('/auth',authApp)
+
 app.route('/patient',patientApp)
 
-const port = 8000;
+const port =  8000;
 
 console.log(`Server is running on http://localhost:${port}`)
 

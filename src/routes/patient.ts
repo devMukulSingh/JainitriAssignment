@@ -5,8 +5,8 @@ import { Prisma } from "@prisma/client";
 
 const patientApp = new Hono();
 
-patientApp.post('/post-patient', async (c) => {
-
+patientApp.post('/:userId/post-patient', async (c) => {
+    const { userId } = c.req.param()
     const body = await c.req.json();
     const parsedBody = patientSchema.safeParse(body);
     if (!parsedBody.success) {
@@ -14,7 +14,7 @@ patientApp.post('/post-patient', async (c) => {
             error: parsedBody.error.errors.map(err => err.message),
         }, 400)
     }
-    const { diseaseId, heartRate, name,phone, userId } = parsedBody.data;
+    const { diseaseId, heartRate, name, phone } = parsedBody.data;
     try {
         const newPatient = await prisma.patient.create({
             data: {
@@ -30,7 +30,7 @@ patientApp.post('/post-patient', async (c) => {
                         id: diseaseId
                     }
                 },
-                userId
+                userId:Number(userId)
             }
         })
         return c.json({
@@ -54,6 +54,58 @@ patientApp.post('/post-patient', async (c) => {
     }
 })
 
+patientApp.get('/:userId/get-patients', async (c) => {
+    const params = c.req.param()
+    const parsedPrams = patientSchema.pick({ userId: true }).safeParse(params);
+    if (!parsedPrams.success) {
+        return c.json({
+            error: parsedPrams.error.errors.map(err => err.message),
+        }, 400)
+    }
+    const { userId } = parsedPrams.data;
+    try {
+        const patients = await prisma.patient.findMany({
+            where: {
+                userId
+            }
+        })
+        return c.json({
+            data: patients
+        }, 200)
+    }
+    catch (e: any) {
+        console.log(e.message);
+        return c.json({
+            error: "Internal server error"
+        }, 500)
+    }
+})
 
-
+patientApp.get('/:userId/get-patient/:phone', async (c) => {
+    const params = c.req.param();
+    const parsedParams = patientSchema.pick({ userId: true,phone:true }).safeParse(params);
+    if (!parsedParams.success) {
+        return c.json({
+            error: parsedParams.error.errors.map(err => err.message),
+        }, 400)
+    }
+    const { userId,phone } = parsedParams.data;
+    try {
+        const patient = await prisma.patient.findMany({
+            where: {
+                phone,
+                userId
+            }
+        })
+        return c.json({
+            data: patient
+        }, 200)
+    }
+    catch (e: any) {
+        console.log(e.message);
+        return c.json({
+            error: "Internal server error"
+        }, 500)
+    }
+})
 export default patientApp
