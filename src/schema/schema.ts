@@ -29,6 +29,21 @@ export const patientSchema = z.object({
         message: "Max 40 characters allowed"
     }),
     heartRate: z.coerce.number({ required_error: "heartRate is required" }),
-    diseaseId: z.coerce.number({ required_error: "diseaseId is required" }),
-    userId: z.coerce.number({ required_error: "userId is required" }),
+    diseaseIds: z.object({
+        id: z.string({ required_error: "diseaseId is required" }).trim().min(1,{
+            message:"diseaseId is required"
+        })
+    }).array(),
+    userId: z.string({ required_error: "userId is required" }).trim().min(1,{
+        message:"userId is required"
+    }),
+})
+
+
+export const diseaseSchema = z.object({
+    name: z.string({ required_error: "disease name is required" }).trim().min(1, {
+        message: "disease name is required"
+    }).max(100, {
+        message: "Max 100 characters allowed"
+    }),
 })

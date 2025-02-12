@@ -14,7 +14,7 @@ patientApp.post('/:userId/post-patient', async (c) => {
             error: parsedBody.error.errors.map(err => err.message),
         }, 400)
     }
-    const { diseaseId, heartRate, name, phone } = parsedBody.data;
+    const { diseaseIds, heartRate, name, phone } = parsedBody.data;
     try {
         const newPatient = await prisma.patient.create({
             data: {
@@ -25,12 +25,10 @@ patientApp.post('/:userId/post-patient', async (c) => {
                         value: heartRate
                     },
                 },
-                disease: {
-                    connect: {
-                        id: diseaseId
-                    }
+                diseases: {
+                    connect: diseaseIds
                 },
-                userId:Number(userId)
+                userId
             }
         })
         return c.json({

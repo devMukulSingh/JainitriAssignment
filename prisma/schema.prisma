@@ -12,23 +12,24 @@ datasource db {
 // can have multiple patients
 
 model User{
-  id                  Int               @id @default(autoincrement())
-  email               String            @unique
+  id                  String               @id @default(cuid())
+  email               String              @unique
   name                String
   password            String
   patients            Patient[]           @relation("userToPatient")
+  diseases            Disease[]           @relation("userToDisease")
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 }
 
 
 model Patient{
-  id                              Int                 @id @default(autoincrement())
+  id                              String                 @id @default(cuid())
   phone                           String              @unique
   name                            String  
   heartRateDetails                HeartRate?          @relation("patientToHeartRate")
-  disease                         Disease?            @relation("patientToDisease")  
-  userId                          Int               
+  diseases                        Disease[]          @relation("patientToDisease")  
+  userId                          String               
   user                            User                @relation("userToPatient",references: [id],fields: [userId])
   createdAt                       DateTime            @default(now())
   updatedAt                       DateTime            @updatedAt
@@ -36,15 +37,17 @@ model Patient{
 
 //assuming heartRate is measured in beats/minute
 model HeartRate{
-    id                              Int             @id @default(autoincrement())
+    id                              String             @id @default(cuid())
     patient                         Patient         @relation("patientToHeartRate",references: [id],fields: [patientId])
-    patientId                       Int             @unique
+    patientId                       String             @unique
     value                           Int          
 }
 
 model Disease{
-  id                            Int             @id @default(autoincrement())
+  id                            String               @id @default(cuid())
   name                          String  
   patient                       Patient?          @relation("patientToDisease",references: [id],fields: [patientId])
-  patientId                     Int?             @unique  
+  patientId                     String?           
+  userId                        String
+  user                          User              @relation("userToDisease",references: [id],fields: [userId])
 }
