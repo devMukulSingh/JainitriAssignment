@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import authApp from './routes/auth.js'
+import patientApp from './routes/patient.js'
 
 const app = new Hono().basePath('/api/v1');
 
@@ -11,6 +12,7 @@ app.use('/api/*', cors())
 app.use(logger())
 
 app.route('/auth',authApp)
+app.route('/patient',patientApp)
 
 const port = 8000;
 

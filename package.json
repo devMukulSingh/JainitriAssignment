@@ -2,7 +2,9 @@
   "name": "jainitri-server",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "generate":"bun x prisma generate",
+    "migrate":"bun x prisma db push"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",

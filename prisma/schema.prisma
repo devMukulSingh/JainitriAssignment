@@ -24,6 +24,7 @@ model User{
 
 model Patient{
   id                              Int                 @id @default(autoincrement())
+  phone                           String              @unique
   name                            String  
   heartRateDetails                HeartRate?          @relation("patientToHeartRate")
   disease                         Disease?            @relation("patientToDisease")  
@@ -33,17 +34,17 @@ model Patient{
   updatedAt                       DateTime            @updatedAt
 }
 
+//assuming heartRate is measured in beats/minute
 model HeartRate{
-    id                            Int             @id @default(autoincrement())
-    patient                       Patient         @relation("patientToHeartRate",references: [id],fields: [patientId])
-    patientId                     Int             @unique
-    value                         String          
-    //more heart rate metrics here
+    id                              Int             @id @default(autoincrement())
+    patient                         Patient         @relation("patientToHeartRate",references: [id],fields: [patientId])
+    patientId                       Int             @unique
+    value                           Int          
 }
 
 model Disease{
   id                            Int             @id @default(autoincrement())
   name                          String  
-  patient                      Patient          @relation("patientToDisease",references: [id],fields: [patientId])
-  patientId                     Int             @unique  
+  patient                       Patient?          @relation("patientToDisease",references: [id],fields: [patientId])
+  patientId                     Int?             @unique  
 }
