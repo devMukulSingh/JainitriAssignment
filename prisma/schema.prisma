@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -13,3 +8,42 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//Assuming that this app is somewhat like, Hospital management system, where a User is Hospital and a hostipal
+// can have multiple patients
+
+model User{
+  id                  Int               @id @default(autoincrement())
+  email               String            @unique
+  name                String
+  password            String
+  patients            Patient[]           @relation("userToPatient")
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+}
+
+
+model Patient{
+  id                              Int                 @id @default(autoincrement())
+  name                            String  
+  heartRateDetails                HeartRate?          @relation("patientToHeartRate")
+  disease                         Disease?            @relation("patientToDisease")  
+  userId                          Int               
+  user                            User                @relation("userToPatient",references: [id],fields: [userId])
+  createdAt                       DateTime            @default(now())
+  updatedAt                       DateTime            @updatedAt
+}
+
+model HeartRate{
+    id                            Int             @id @default(autoincrement())
+    patient                       Patient         @relation("patientToHeartRate",references: [id],fields: [patientId])
+    patientId                     Int             @unique
+    value                         String          
+    //more heart rate metrics here
+}
+
+model Disease{
+  id                            Int             @id @default(autoincrement())
+  name                          String  
+  patient                      Patient          @relation("patientToDisease",references: [id],fields: [patientId])
+  patientId                     Int             @unique  
+}
