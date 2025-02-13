@@ -15,6 +15,7 @@ patientApp.post('/:userId/post-patient', async (c) => {
         }, 400)
     }
     const { diseaseIds, heartRate, name, phone } = parsedBody.data;
+    // handle same phone no patient conflict
     try {
         const newPatient = await prisma.patient.create({
             data: {
@@ -39,15 +40,19 @@ patientApp.post('/:userId/post-patient', async (c) => {
     catch (e: any) {
         console.log(e.message);
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-            // The .code property can be accessed in a type-safe manner
             if (e.code === 'P2003') {
                 return c.json({
                     error: "User with particular userId doesnt exists"
                 }, 400)
             }
+            if (e.code ==='P2002'){
+                return c.json({
+                    error: "A patient with the given phone number already exists"
+                }, 409)
+            }
         }
         return c.json({
-            error: "Internal server error"
+            error: "Internal server error" + e
         }, 500)
     }
 })

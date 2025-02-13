@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { diseaseSchema } from "../schema/schema.js";
 import { prisma } from "../constants/constants.js";
+import { Prisma } from "@prisma/client";
 
 const diseaseApp = new Hono()
 
@@ -30,11 +31,19 @@ diseaseApp.post('/:userId/post-disease',async(c) => {
             data:newDisease
         },201)
     }
-    catch(e){
-        console.log(e)
+    catch(e:any){
+        console.log(e.message)
+        if(e instanceof Prisma.PrismaClientKnownRequestError){
+            if (e.code ==='P2003'){
+                console.log(`User with userId doesnt exists`);
+                return c.json({
+                    error:"Unauthenticated"
+                },403)
+            }
+        }
         return c.json({
-            msg:"Disease added successfully"
-        },201)
+            error:"Internal server error" + e
+        },500)
     }
 })
 

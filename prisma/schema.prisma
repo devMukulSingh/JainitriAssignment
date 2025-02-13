@@ -25,7 +25,7 @@ model User{
 
 model Patient{
   id                              String                 @id @default(cuid())
-  phone                           String              @unique
+  phone                           String                @unique
   name                            String  
   heartRateDetails                HeartRate?          @relation("patientToHeartRate")
   diseases                        Disease[]          @relation("patientToDisease")  

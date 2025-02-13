@@ -47,7 +47,7 @@ authApp.post('/register', async (c) => {
             if (e.code === 'P2002') {
                 return c.json({
                     error: "user already exists"
-                }, 400)
+                }, 409)
             }
         }
         return c.json({
@@ -81,12 +81,12 @@ authApp.post('/login', async (c) => {
         if (!user) {
             return c.json({
                 error: "Invalid credentials",
-            }, 400)
+            }, 401)
         }
         if (!(await bcrypt.compare(password, user.password))) {
             return c.json({
                 error: "Invalid credentials",
-            }, 400)
+            }, 401)
         }
         return c.json({
             msg: "User loggedin successfully",
